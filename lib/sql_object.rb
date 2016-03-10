@@ -1,12 +1,11 @@
 require_relative 'db_connection'
 require 'active_support/inflector'
 require 'byebug'
-# NB: the attr_accessor we wrote in phase 0 is NOT used in the rest
-# of this project. It was only a warm up.
 
 class SQLObject
 
   def self.columns
+
     unless @column_names
       @column_names = DBConnection.execute2(<<-SQL).first.map(&:to_sym)
         SELECT
