@@ -1,8 +1,11 @@
 require_relative 'db_connection'
+require_relative 'associatable'
 require 'active_support/inflector'
 require 'byebug'
 
 class SQLObject
+
+  extend Associatable
 
   def self.columns
 
