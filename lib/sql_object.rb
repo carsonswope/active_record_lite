@@ -1,13 +1,10 @@
-require_relative 'db_connection'
 require_relative 'associatable'
 require 'active_support/inflector'
 require 'byebug'
 
-class SQLObject
+class SQLObjectBase
 
-  extend Associatable
-
-  def self.db
+  def db
     @@db
   end
 
@@ -17,6 +14,8 @@ class SQLObject
     @@db.type_translation = true
     @@db
   end
+
+  extend Associatable
 
   def self.columns
 

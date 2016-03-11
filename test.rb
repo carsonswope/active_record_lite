@@ -1,43 +1,40 @@
 require './lib/sql_object'
-# require './lib/db_connection'
-require 'active_support/inflector'
+
 require 'sqlite3'
 require 'byebug'
 
-# DBConnection.reset
-DB_SEED_FILE = File.join(ROOT_FOLDER, 'sql_seed.sql')
-DB_FILE_PATH = File.join(ROOT_FOLDER, 'db_file.db')
+SQLObjectBase.db = SQLite3::Database.new('db_file.db')
 
-SQLObject.db = SQLite3::Database.new(DB_FILE_PATH)
-
-class Course < SQLObject
+class Course < SQLObjectBase
   has_many :enrollments
   has_many_through :students, :enrollments, :student
 end
 
-class Enrollment < SQLObject
+class Enrollment < SQLObjectBase
   belongs_to :student
   belongs_to :course
 end
 
-class Student < SQLObject
+class Student < SQLObjectBase
   has_many :enrollments
   has_many_through :courses, :enrollments, :course
 end
 
-class Artist < SQLObject
+class Artist < SQLObjectBase
   has_many :albums
   has_many_through :songs, :albums, :songs
 end
 
-class Album < SQLObject
+class Album < SQLObjectBase
   belongs_to :artist
   has_many :songs
 end
 
-debugger
-
-class Song < SQLObject
+class Song < SQLObjectBase
   belongs_to :album
   has_one_through :artist, :album, :artist
 end
+
+debugger
+
+puts Artist.all[0].songs.map { |s| s.name }

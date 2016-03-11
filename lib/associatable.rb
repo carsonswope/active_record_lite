@@ -47,7 +47,7 @@ module Associatable
       foreign_key_value = send("#{options.foreign_key}")
       return nil if foreign_key_value.nil?
 
-      result = DBConnection.execute(<<-SQL).first
+      result = self.db.execute(<<-SQL).first
         SELECT *
         FROM #{options.table_name}
         WHERE #{options.primary_key.to_s} = #{foreign_key_value}
@@ -68,7 +68,7 @@ module Associatable
 
       primary_key_value = self.id
 
-      results = DBConnection.execute(<<-SQL)
+      results = self.db.execute(<<-SQL)
         SELECT *
         FROM #{options.table_name}
         WHERE #{options.foreign_key.to_s} = #{primary_key_value}
@@ -106,7 +106,7 @@ module Associatable
                             #{id_to_find}"
       end
 
-      results = DBConnection.execute(<<-SQL)
+      results = self.db.execute(<<-SQL)
         SELECT #{source_options.table_name}.*
         FROM #{through_options.table_name}
         JOIN #{source_options.table_name} ON #{join_on}
