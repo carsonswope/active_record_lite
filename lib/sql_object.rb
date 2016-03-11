@@ -7,10 +7,21 @@ class SQLObject
 
   extend Associatable
 
+  def self.db
+    @@db
+  end
+
+  def self.db=(db)
+    @@db = db
+    @@db.results_as_hash = true
+    @@db.type_translation = true
+    @@db
+  end
+
   def self.columns
 
     unless @column_names
-      @column_names = DBConnection.execute2(<<-SQL).first.map(&:to_sym)
+      @column_names = @@db.execute2(<<-SQL).first.map(&:to_sym)
         SELECT
           *
         FROM
@@ -20,8 +31,6 @@ class SQLObject
     @column_names
 
   end
-
-
 
   def self.finalize!
 
@@ -56,7 +65,8 @@ class SQLObject
   end
 
   def self.all
-    rows = DBConnection.execute(<<-SQL)
+
+    rows = @@db.execute(<<-SQL)
       SELECT
         *
       FROM
@@ -70,7 +80,7 @@ class SQLObject
   end
 
   def self.find(id)
-    row = DBConnection.execute(<<-SQL)
+    row = @@db.execute(<<-SQL)
       SELECT
         *
       FROM
@@ -108,12 +118,12 @@ class SQLObject
       "'#{attributes[col_name]}'"
     end.join(", ")
 
-    DBConnection.execute(<<-SQL)
+    @@db.execute(<<-SQL)
       INSERT INTO #{self.class.table_name} (#{columns_to_save.join(", ")})
       VALUES ( #{column_values} )
     SQL
 
-    self.id = DBConnection.last_insert_row_id
+    self.id = @@db.last_insert_row_id
   end
 
   def update
@@ -124,7 +134,7 @@ class SQLObject
       col_val_pairs << "#{col} = '#{val}'"
     end
 
-    DBConnection.execute(<<-SQL)
+    @@db.execute(<<-SQL)
       UPDATE #{self.class.table_name}
       SET #{col_val_pairs.join(", ")}
       WHERE id = #{self.id}

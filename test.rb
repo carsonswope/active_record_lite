@@ -1,9 +1,14 @@
 require './lib/sql_object'
-require './lib/db_connection'
+# require './lib/db_connection'
 require 'active_support/inflector'
+require 'sqlite3'
 require 'byebug'
 
-DBConnection.reset
+# DBConnection.reset
+DB_SEED_FILE = File.join(ROOT_FOLDER, 'sql_seed.sql')
+DB_FILE_PATH = File.join(ROOT_FOLDER, 'db_file.db')
+
+SQLObject.db = SQLite3::Database.new(DB_FILE_PATH)
 
 class Course < SQLObject
   has_many :enrollments
@@ -29,6 +34,8 @@ class Album < SQLObject
   belongs_to :artist
   has_many :songs
 end
+
+debugger
 
 class Song < SQLObject
   belongs_to :album
