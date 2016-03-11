@@ -80,13 +80,6 @@ module Associatable
 
   end
 
-  def has_one_through(name, through_name, source_name)
-    has_many_through("#{name}_as_list", through_name, source_name)
-    define_method(name) do
-      send("#{name}_as_list").first
-    end
-  end
-
   def has_many_through(name, through_name, source_name)
 
     through_options = assoc_options[through_name]
@@ -96,10 +89,10 @@ module Associatable
       source_options = through_options.model_class.assoc_options[source_name]
 
       if source_options.type == :has_many
-        join_on = " #{source_options.table_name}.#{source_options.foreign_key} =
+        join_on = " #{source_options.table_name }.#{source_options.foreign_key} =
                     #{through_options.table_name}.#{source_options.primary_key}"
       else #source_options.type == :belongs_to
-        join_on = " #{source_options.table_name}.#{source_options.primary_key} =
+        join_on = " #{source_options.table_name }.#{source_options.primary_key} =
                     #{through_options.table_name}.#{source_options.foreign_key}"
       end
 
@@ -122,6 +115,16 @@ module Associatable
 
     results.map { |row| source_options.model_class.new(row) }
 
+    end
+  end
+
+  #special method just to return one object not wrapped in an array.
+  #uses more generic has_many_through method
+
+  def has_one_through(name, through_name, source_name)
+    has_many_through("#{name}_as_list", through_name, source_name)
+    define_method(name) do
+      send("#{name}_as_list").first
     end
   end
 

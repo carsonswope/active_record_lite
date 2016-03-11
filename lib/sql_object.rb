@@ -21,7 +21,12 @@ class SQLObject
 
   end
 
+
+
   def self.finalize!
+
+    #finalize creates getter and setter methods
+    #for all the columns in the object's table
 
     define_method(:id) do
       attributes[:id]

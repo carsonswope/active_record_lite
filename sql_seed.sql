@@ -1,43 +1,91 @@
-CREATE TABLE cats (
+CREATE TABLE courses (
+  id INTEGER PRIMARY KEY,
+  name VARCHAR(255) NOT NULL
+);
+
+CREATE TABLE students (
+  id INTEGER PRIMARY KEY,
+  name VARCHAR(255) NOT NULL
+);
+
+CREATE TABLE enrollments (
+  id INTEGER PRIMARY KEY,
+  student_id INTEGER NOT NULL,
+  course_id INTEGER NOT NULL
+);
+
+INSERT INTO
+  courses (id, name)
+VALUES
+  (1, 'Ruby'), (2, 'JavaScript');
+
+INSERT INTO
+  students (id, name)
+VALUES
+  (1, 'Carnap'), (2, 'Russel'), (3, 'Soames'),
+  (4, 'Kripke'), (5, 'Quine'),  (6, 'Frege');
+
+INSERT INTO
+  enrollments (id, student_id, course_id)
+VALUES
+  (1, 1, 1), (2, 2, 1), (3, 3, 1), (4, 2, 2),
+  (5, 3, 2), (6, 4, 2), (7, 5, 1), (8, 6, 2);
+
+CREATE TABLE artists (
+  id INTEGER PRIMARY KEY,
+  name VARCHAR(255) NOT NULL
+);
+
+CREATE TABLE albums (
   id INTEGER PRIMARY KEY,
   name VARCHAR(255) NOT NULL,
-  owner_id INTEGER,
-
-  FOREIGN KEY(owner_id) REFERENCES human(id)
+  artist_id INTEGER NOT NULL
 );
 
-CREATE TABLE humans (
+CREATE TABLE songs (
   id INTEGER PRIMARY KEY,
-  fname VARCHAR(255) NOT NULL,
-  lname VARCHAR(255) NOT NULL,
-  house_id INTEGER,
-
-  FOREIGN KEY(house_id) REFERENCES human(id)
-);
-
-CREATE TABLE houses (
-  id INTEGER PRIMARY KEY,
-  address VARCHAR(255) NOT NULL
+  name VARCHAR(255) NOT NULL,
+  album_id INTEGER NOT NULL
 );
 
 INSERT INTO
-  houses (id, address)
+  artists (id, name)
 VALUES
-  (1, "26th and Guerrero"), (2, "Dolores and Market");
+  (1, 'Bob Marley'), (2, 'Bob Dylan');
 
 INSERT INTO
-  humans (id, fname, lname, house_id)
+  albums (id, name, artist_id)
 VALUES
-  (1, "Devon", "Watts", 1),
-  (2, "Matt", "Rubens", 1),
-  (3, "Ned", "Ruggeri", 2),
-  (4, "Catless", "Human", NULL);
+  (1, 'Burnin', 1), (2, 'Catch a fire', 1),
+  (3, 'Blonde on Blonde', 2);
 
 INSERT INTO
-  cats (id, name, owner_id)
+  songs (id, name, album_id)
 VALUES
-  (1, "Breakfast", 1),
-  (2, "Earl", 2),
-  (3, "Haskell", 3),
-  (4, "Markov", 3),
-  (5, "Stray Cat", NULL);
+  (1, 'Burnin and Lootin', 1),
+  (2, 'Duppy Conqueror', 1),
+  (3, 'Get Up, Stand Up', 1),
+  (4, 'Hellelujah Time', 1),
+  (5, 'I Shot the Sheriff', 1),
+  (6, 'One Foundation', 1),
+  (7, 'Pass It On', 1),
+  (8, 'Put It On', 1),
+  (9, 'Rastaman Chant', 1),
+  (10, 'Small Axe', 1),
+  (11, '400 Years', 2),
+  (12, 'Concrete Jungle', 2),
+  (13, 'Kinky Reggae', 2),
+  (14, 'Midnight Ravers', 2),
+  (15, 'No More Trouble', 2),
+  (16, 'Slave Driver', 2),
+  (17, 'Stir It Up', 2),
+  (18, 'Rainy day Women #12 & #35', 3),
+  (19, 'Pledging my Time', 3),
+  (20, 'Visions of Johanna', 3),
+  (21, 'One of us must know',3),
+  (22, 'I want you',3),
+  (23, 'Stuck inside of Mobile..',3),
+  (24, 'Leopard-skin pill-box hat',3),
+  (25, 'Just like a woman',3),
+  (26, "Most likely you'll go your way and I'll go mine",3),
+  (27, 'Temporary like Achilles',3);

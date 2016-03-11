@@ -3,41 +3,34 @@ require './lib/db_connection'
 require 'active_support/inflector'
 require 'byebug'
 
-class Cat < SQLObject
+DBConnection.reset
 
-  belongs_to :human, foreign_key: :owner_id
-  has_one_through :home, :human, :house
-
-  finalize!
-
+class Course < SQLObject
+  has_many :enrollments
+  has_many_through :students, :enrollments, :student
 end
 
-class Human < SQLObject
-
-  has_many :cats, foreign_key: :owner_id
-  belongs_to :house
-
-  self.table_name = 'humans'
-  finalize!
-
+class Enrollment < SQLObject
+  belongs_to :student
+  belongs_to :course
 end
 
-class House < SQLObject
-
-  has_many :humans
-  has_many_through :cats, :humans, :cats
-
-  finalize!
+class Student < SQLObject
+  has_many :enrollments
+  has_many_through :courses, :enrollments, :course
 end
 
-puts Cat.all[0].attributes
+class Artist < SQLObject
+  has_many :albums
+  has_many_through :songs, :albums, :songs
+end
 
-puts Cat.all.map { |cat|
-  cat.name
-}
+class Album < SQLObject
+  belongs_to :artist
+  has_many :songs
+end
 
-debugger
-
-puts 'aug'
-puts 'aug'
-puts 'poop'
+class Song < SQLObject
+  belongs_to :album
+  has_one_through :artist, :album, :artist
+end
