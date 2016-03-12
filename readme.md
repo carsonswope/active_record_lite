@@ -1,12 +1,12 @@
-# RustlingRecord
+# ActiveRegistry
 
-RustlingRecord is an ORM inspired by ActiveRecord from Ruby on Rails. It creates Ruby objects out of SQL tables, allowing the user to perform database operations without writing a single line of SQL.
+ActiveRegistry is an ORM inspired by ActiveRecord from Ruby on Rails. It creates Ruby objects out of SQL tables, allowing the user to perform database operations without writing a single line of SQL.
 
 ## How to set up
 
-The only dependency of RustlingRecord is ActiveSupport, for inferring the pluralized version of class names, or the singular version of table names.
+The only dependency of ActiveRegistry is ActiveSupport, for inferring the pluralized version of class names, or the singular version of table names.
 
-The SQLObjectBase class is the base class all classes that apply the RustlingRecord ORM functionality. Before defining your classes, you must tell the SQLObjectBase class what Ruby database object it will be talking to. As long as the database object responds to ::execute, ::execute2 and ::last_insert_row_id, any type of database object will do. For example, to connect your SQLObjectBase class to an SQLite3 database from a file, you could write:
+The SQLObjectBase class is the base class all classes that apply the ActiveRegistry ORM functionality. Before defining your classes, you must tell the SQLObjectBase class what Ruby database object it will be talking to. As long as the database object responds to ::execute, ::execute2 and ::last_insert_row_id, any type of database object will do. For example, to connect your SQLObjectBase class to an SQLite3 database from a file, you could write:
 
 ```ruby
 SQLObjectBase.db = SQLite3::Database.new('db_file.db')
@@ -14,16 +14,17 @@ SQLObjectBase.db = SQLite3::Database.new('db_file.db')
 
 ## Sample usage
 
-To see the RustlingRecord in action, download this directory. You need to have Ruby installed, but that's all you need. Next, run these commands:
+To see a sample of ActiveRegistry in action, clone this repo onto your machine. It requires Ruby to be installed, but that's all you need. Next, run these commands:
 
 * `$ bundle install`
 * `$ rm demo/db_file.db`
 * `$ cat demo/sql_seed.sql | sqlite3 demo/db_file.db`
-* `$ ruby demo/test.rb`
+
+This will set up an sqlite3 database in the demo directory of the repo, seeded with a small number of tables and associations. You can run `$ ruby demo/test.rb` to see the associations that are made possible by ActiveRegistry in action.
 
 ## How to use
 
-Once you have set up the database connections, you can create classes. The methods that you have access to are:
+ActiveRegistry provides each class with some basic methods for manipulating ORM objects:
 
 * `#save`
 * `#update`
@@ -53,14 +54,28 @@ Album.all[0].songs
 has_many_through associations are supported, and they can be chained as deeply as you want:
 
 ```ruby
-class Artist
-  has_many :albums
-  has_many_through :songs, :albums, :songs
+class Student < SQLObjectBase
+end
+
+class Enrollment < SQLObjectBase
+  belongs_to :student
+end
+
+class Course < SQLObjectBase
+  has_many :enrollments
+  has_many_through :students, :enrollments, :student
+end
+
+class Instructor < SQLObjectBase
+  has_many :courses
+  has_many_through :enrollments, :courses, :enrollments
+  has_many_through :students, :enrollments, :student
 end
 ```
 
-This enables you to call the method #songs on an instance of Artist, returning all of that artist's songs:
+With the corresponding associations in Course and Enrollment, instances in Instructor are now able to call the method `#students`, and get a list of that Instructor's students, or just a list of their names:
 
 ```ruby
-Artist.all[0].songs
+Instructor.all[0].students
+Instructor.all[0].students.map { |s| s.name }
 ```

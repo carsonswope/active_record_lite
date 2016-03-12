@@ -50,8 +50,8 @@ VALUES
 INSERT INTO
   enrollments (id, student_id, course_id)
 VALUES
-  (1, 1, 1), (2, 2, 1), (3, 3, 1), (4, 2, 2),
-  (5, 3, 2), (6, 4, 2), (7, 5, 1), (8, 6, 2);
+  (1, 1, 1), (2, 2, 1), (3, 3, 1),
+  (4, 4, 2), (5, 5, 2), (6, 6, 2);
 
 CREATE TABLE artists (
   id INTEGER PRIMARY KEY,

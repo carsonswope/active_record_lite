@@ -4,30 +4,45 @@ require 'sqlite3'
 require 'byebug'
 
 SQLObjectBase.db = SQLite3::Database.new('demo/db_file.db')
-
-class Instructor < SQLObjectBase
-  has_many :courses
-  has_many_through :enrollments, :courses, :enrollments
-  has_many_through :students, :enrollments, :student
-  has_many_through :notebooks, :enrollments, :notebooks
-end
+#
+# class Instructor < SQLObjectBase
+#   has_many :courses
+#   has_many_through :enrollments, :courses, :enrollments
+#   has_many_through :students, :enrollments, :student
+#   has_many_through :notebooks, :enrollments, :notebooks
+# end
+#
+# class Course < SQLObjectBase
+#   belongs_to :instructor
+#   has_many :enrollments
+#   has_many_through :students, :enrollments, :student
+# end
+#
+# class Enrollment < SQLObjectBase
+#   belongs_to :student
+#   belongs_to :course
+#   has_many_through :notebooks, :student, :notebooks
+# end
 
 class Course < SQLObjectBase
-  belongs_to :instructor
   has_many :enrollments
   has_many_through :students, :enrollments, :student
 end
 
 class Enrollment < SQLObjectBase
   belongs_to :student
-  belongs_to :course
-  has_many_through :notebooks, :student, :notebooks
+end
+
+class Instructor < SQLObjectBase
+  has_many :courses
+  has_many_through :enrollments, :courses, :enrollments
+  has_many_through :students, :enrollments, :student
 end
 
 class Student < SQLObjectBase
-  has_many :enrollments
-  has_many_through :courses, :enrollments, :course
-  has_many :notebooks
+  # has_many :enrollments
+  # has_many_through :courses, :enrollments, :course
+  # has_many :notebooks
 end
 
 class Notebook < SQLObjectBase
@@ -51,7 +66,7 @@ class Song < SQLObjectBase
   has_one_through :artist, :album, :artist
 end
 
-x = Instructor.all[0].notebooks
+x = Instructor.all[0].students
 
 debugger
 
