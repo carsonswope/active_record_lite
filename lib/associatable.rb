@@ -10,6 +10,10 @@ class AssocOptions
   def table_name
     @class_name.downcase.underscore + "s"
   end
+
+  def children
+    [self]
+  end
 end
 
 class BelongsToOptions < AssocOptions
@@ -28,6 +32,56 @@ class HasManyOptions < AssocOptions
     @class_name = options[:class_name]    || name.to_s.camelcase.singularize
     @primary_key = options[:primary_key]  || :id
     @type = :has_many
+  end
+end
+
+class HasManyThroughOptions
+  attr_accessor :name, :type, :through_name, :through_assoc, :source_name, :source_assoc
+
+  def initialize(name, through_assoc, source_name)
+    @name = name
+    @through_assoc = through_assoc
+    @source_name = source_name
+    @type = :has_many_through
+  end
+
+  def children
+
+    kids = []
+
+    kid = @through_assoc
+    kids.push(kid)
+
+    until kid.type != :has_many_through
+      kid = kid.through_assoc
+      kids.push(kid)
+    end
+
+    (kids.length - 2).downto(0) do |x|
+
+      kids[x] = kids[x+1].model_class.assoc_options[kids[x].source_name]
+
+    end
+
+    kids.reverse!
+
+    kid = kids[-1].model_class.assoc_options[source_name]
+    kids.push ( kid )
+
+    until kid.type != :has_many_through
+
+      if kids[-1].type == :has_many_through
+        kids += (kids.pop.children)
+        kid = kids[-1]
+      else
+
+        kid = kids[-1].model_class.assoc_options[source_name]
+        kids.push (kid)
+      end
+    end
+
+    kids
+
   end
 end
 
@@ -83,37 +137,53 @@ module Associatable
   def has_many_through(name, through_name, source_name)
 
     through_options = assoc_options[through_name]
+    assoc_options[name] = HasManyThroughOptions.new(name, through_options, source_name)
 
     define_method(name) do
 
-      source_options = through_options.model_class.assoc_options[source_name]
+      assoc_list = through_options.children
 
-      if source_options.type == :has_many
-        join_on = " #{source_options.table_name }.#{source_options.foreign_key} =
-                    #{through_options.table_name}.#{source_options.primary_key}"
-      else #source_options.type == :belongs_to
-        join_on = " #{source_options.table_name }.#{source_options.primary_key} =
-                    #{through_options.table_name}.#{source_options.foreign_key}"
+      assoc_list += (
+        assoc_list[-1].model_class.assoc_options[source_name].children
+      )
+
+      assoc_list.reverse!
+
+      query = "SELECT #{assoc_list[0].table_name}.* "
+
+      assoc_list.each_with_index do |assoc, idx|
+
+        if idx == 0
+          query += "FROM #{assoc.table_name} "
+        else
+          query += "JOIN #{assoc.table_name} ON "
+
+          if assoc_list[idx-1].type == :has_many
+            query += "#{assoc_list[idx-1].table_name}.#{assoc_list[idx-1].foreign_key} = "
+            query += "#{assoc.table_name}.#{assoc_list[idx-1].primary_key} "
+          else #assoc_list[idx-1].type == :belongs_to
+            query += "#{assoc_list[idx-1].table_name}.#{assoc_list[idx-1].primary_key} = "
+            query += "#{assoc.table_name}.#{assoc_list[idx-1].foreign_key} "
+          end
+        end
+
       end
 
-      if through_options.type == :has_many
-        id_to_find = send( "#{through_options.primary_key}")
-        where_condition =  "#{through_options.table_name}.#{through_options.foreign_key} =
-                            #{id_to_find}"
-      else #through_options.type == :belongs_to
-        id_to_find = send( "#{through_options.foreign_key}")
-        where_condition =  "#{through_options.table_name}.#{through_options.primary_key} =
-                            #{id_to_find}"
+      query += "WHERE "
+
+      if assoc_list[-1].type == :has_many
+        id_to_find = send( "#{assoc_list[-1].primary_key}" )
+        key_name = assoc_list[-1].foreign_key
+      else
+        id_to_find = send( "#{assoc_list[-1].foreign_key}" )
+        key_name = assoc_list[-1].primary_key
       end
 
-      results = self.db.execute(<<-SQL)
-        SELECT #{source_options.table_name}.*
-        FROM #{through_options.table_name}
-        JOIN #{source_options.table_name} ON #{join_on}
-        WHERE #{where_condition}
-      SQL
+      query += "#{assoc_list[-1].table_name}.#{key_name} = #{id_to_find}"
 
-    results.map { |row| source_options.model_class.new(row) }
+      results = self.db.execute(query)
+
+      results.map { |row| assoc_list[0].model_class.new(row) }
 
     end
   end

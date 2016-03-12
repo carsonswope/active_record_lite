@@ -1,5 +1,11 @@
 CREATE TABLE courses (
   id INTEGER PRIMARY KEY,
+  name VARCHAR(255) NOT NULL,
+  instructor_id INTEGER NOT NULL
+);
+
+CREATE TABLE instructors (
+  id INTEGER PRIMARY KEY,
   name VARCHAR(255) NOT NULL
 );
 
@@ -14,10 +20,26 @@ CREATE TABLE enrollments (
   course_id INTEGER NOT NULL
 );
 
+CREATE TABLE notebooks (
+  id INTEGER PRIMARY KEY,
+  name VARCHAR(255) NOT NULL,
+  student_id INTEGER NOT NULL
+);
+
 INSERT INTO
-  courses (id, name)
+  notebooks (id, name, student_id)
 VALUES
-  (1, 'Ruby'), (2, 'JavaScript');
+  (1, 'mead', 1);
+
+INSERT INTO
+  courses (id, name, instructor_id)
+VALUES
+  (1, 'Ruby', 1), (2, 'JavaScript', 1);
+
+INSERT INTO
+  instructors (id, name)
+VALUES
+  (1, 'The professor');
 
 INSERT INTO
   students (id, name)
