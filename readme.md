@@ -70,7 +70,9 @@ Album.all[0].artist
 Album.all[0].songs
 ```
 
-has_many_through associations are supported, and they can be chained as deeply as you want:
+## Association Chains
+
+Associations can be chained as deeply as you want using `has_many_through`:
 
 ```ruby
 class Student < SQLObjectBase
@@ -92,7 +94,7 @@ class Instructor < SQLObjectBase
 end
 ```
 
-With the corresponding associations in Course and Enrollment, instances in Instructor are now able to call the method `#students`, and get a list of that Instructor's students, or just a list of their names:
+With the corresponding associations in Course and Enrollment, instances of the Instructor class are now able to call the method `#students`, and get a list of that Instructor's students, or just a list of their names:
 
 ```ruby
 Instructor.all[0].students

@@ -8,7 +8,7 @@ class AssocOptions
   end
 
   def table_name
-    @class_name.downcase.underscore + "s"
+    model_class.table_name
   end
 
   def children
