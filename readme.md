@@ -6,7 +6,7 @@ ActiveRegistry is an ORM inspired by ActiveRecord from Ruby on Rails. It creates
 
 The only dependency of ActiveRegistry is ActiveSupport, for inferring the pluralized version of class names, or the singular version of table names.
 
-The SQLObjectBase class is the base class all classes that apply the ActiveRegistry ORM functionality. Before defining your classes, you must tell the SQLObjectBase class what Ruby database object it will be talking to. As long as the database object responds to ::execute, ::execute2 and ::last_insert_row_id, any type of database object will do. For example, to connect your SQLObjectBase class to an SQLite3 database from a file, you could write:
+The SQLObjectBase class is the base class for all classes that apply the ActiveRegistry ORM functionality. Before defining your classes, you must tell the SQLObjectBase class what Ruby database object it will be talking to. As long as the database object responds to `::execute`, `::execute2` and `::last_insert_row_id`, any type of database object will do. For example, to connect your SQLObjectBase class to an SQLite3 database from a file, you could write:
 
 ```ruby
 SQLObjectBase.db = SQLite3::Database.new('db_file.db')
