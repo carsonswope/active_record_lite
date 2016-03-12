@@ -36,7 +36,7 @@ class HasManyOptions < AssocOptions
 end
 
 class HasManyThroughOptions
-  attr_accessor :name, :type, :through_name, :through_assoc, :source_name, :source_assoc
+  attr_accessor :name, :type, :through_assoc, :source_name
 
   def initialize(name, through_assoc, source_name)
     @name = name
@@ -47,10 +47,8 @@ class HasManyThroughOptions
 
   def children
 
-    kids = []
-
     kid = @through_assoc
-    kids.push(kid)
+    kids = [kid]
 
     until kid.type != :has_many_through
       kid = kid.through_assoc
@@ -71,7 +69,7 @@ class HasManyThroughOptions
     until kid.type != :has_many_through
 
       if kids[-1].type == :has_many_through
-        kids += (kids.pop.children)
+        kids += kids.pop.children
         kid = kids[-1]
       else
 

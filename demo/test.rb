@@ -33,7 +33,7 @@ end
 class Notebook < SQLObjectBase
   belongs_to :student
   has_many_through :courses, :student, :courses
-  has_many_through :instructors, :courses, :instructor
+  has_one_through :instructor, :courses, :instructor
 end
 
 class Artist < SQLObjectBase
