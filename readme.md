@@ -16,10 +16,10 @@ SQLObjectBase.db = SQLite3::Database.new('db_file.db')
 
 To see the RustlingRecord in action, download this directory. You need to have Ruby installed, but that's all you need. Next, run these commands:
 
-* `bundle install`
-* `rm demo/db_file.db`
-* `cat demo/sql_seed.sql | sqlite3 demo/db_file.db`
-* `ruby demo/test.rb`
+`bundle install
+rm demo/db_file.db
+cat demo/sql_seed.sql | sqlite3 demo/db_file.db
+ruby demo/test.rb`
 
 ## How to use
 
